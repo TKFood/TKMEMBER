@@ -1,5 +1,4 @@
 ﻿using System;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -99,6 +98,14 @@ namespace TKMEMBER
             if(dsMember.Tables["TEMPdsMember"].Rows.Count >= 1)
             {
                 textBox2.Text = dataGridView1.CurrentRow.Cells[1].Value.ToString();
+                textBox3.Text = dataGridView1.CurrentRow.Cells[2].Value.ToString();
+                textBox4.Text = dataGridView1.CurrentRow.Cells[4].Value.ToString();
+                textBox5.Text = dataGridView1.CurrentRow.Cells[7].Value.ToString();
+                textBox6.Text = dataGridView1.CurrentRow.Cells[8].Value.ToString();
+                textBox7.Text = dataGridView1.CurrentRow.Cells[6].Value.ToString();
+                textBox8.Text = dataGridView1.CurrentRow.Cells[3].Value.ToString();
+                textBox9.Text = dataGridView1.CurrentRow.Cells[5].Value.ToString();
+
             }
             else
             {
