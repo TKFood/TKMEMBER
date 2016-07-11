@@ -55,11 +55,23 @@ namespace TKMEMBER
             try
             {                
 
-                if(!string.IsNullOrEmpty(textBox1.Text.ToString()))
+                if(!string.IsNullOrEmpty(textBox1.Text.ToString())|| !string.IsNullOrEmpty(textBox5.Text.ToString()))
                 {
                     sqlConn = new SqlConnection("server=192.168.1.102;database=TKFOODDB;uid=sa;pwd=chi");
                     sbSql.Clear();
-                    sbSql.AppendFormat("SELECT  [ID],[Cname],[Mobile1],[OldCardID],[Telphone],[Email],[Address],[Sex],[Birthday] FROM [TKFOODDB].[dbo].[Member] WHERE OldCardID LIKE '{0}%' ", textBox1.Text.ToString());
+                    if(!string.IsNullOrEmpty(textBox1.Text.ToString())&& string.IsNullOrEmpty(textBox5.Text.ToString()))
+                    {
+                        sbSql.AppendFormat("SELECT TOP 100 [ID],[Cname] AS '姓名',[Mobile1]  AS '手機',[OldCardID]  AS '舊卡號',[Telphone]  AS '電話',[Email],[Address]  AS '住址',[Sex]  AS '性別',[Birthday]  AS '生日' FROM [TKFOODDB].[dbo].[Member] WHERE OldCardID LIKE '%{0}%' ", textBox1.Text.ToString());
+                    }
+                    if (string.IsNullOrEmpty(textBox1.Text.ToString()) && !string.IsNullOrEmpty(textBox5.Text.ToString()))
+                    {
+                        sbSql.AppendFormat("SELECT TOP 100 [ID],[Cname] AS '姓名',[Mobile1]  AS '手機',[OldCardID]  AS '舊卡號',[Telphone]  AS '電話',[Email],[Address]  AS '住址',[Sex]  AS '性別',[Birthday]  AS '生日' FROM [TKFOODDB].[dbo].[Member] WHERE Cname LIKE '%{0}%' ", textBox5.Text.ToString());
+                    }
+                    if(!string.IsNullOrEmpty(textBox1.Text.ToString()) && !string.IsNullOrEmpty(textBox5.Text.ToString()))
+                    {
+                        sbSql.AppendFormat("SELECT TOP 100 [ID],[Cname] AS '姓名',[Mobile1]  AS '手機',[OldCardID]  AS '舊卡號',[Telphone]  AS '電話',[Email],[Address]  AS '住址',[Sex]  AS '性別',[Birthday]  AS '生日' FROM [TKFOODDB].[dbo].[Member] WHERE  OldCardID LIKE '%{0}%' AND Cname LIKE '%{1}%' ", textBox1.Text.ToString(), textBox5.Text.ToString());
+                    }
+
 
                     adapter = new SqlDataAdapter(@"" + sbSql, sqlConn);
                     sqlCmdBuilder = new SqlCommandBuilder(adapter);
@@ -112,7 +124,7 @@ namespace TKMEMBER
                 sbSql.Clear();
                 //sbSql.Append("UPDATE Member SET Cname='009999',Mobile1='009999',Telphone='',Email='',Address='',Sex='',Birthday='' WHERE ID='009999'");
                 
-                sbSql.AppendFormat("  UPDATE Member SET Cname='{1}',Mobile1='{2}',Telphone='{3}',Email='{4}',Address='{5}',Sex='{6}' WHERE ID='{0}' ", list_Member[0].ID.ToString(), list_Member[0].Cname.ToString(), list_Member[0].Mobile1.ToString(), list_Member[0].Telphone.ToString(), list_Member[0].Email.ToString(), list_Member[0].Address.ToString(), list_Member[0].Sex.ToString());
+                sbSql.AppendFormat("  UPDATE Member SET Cname='{1}',Mobile1='{2}',Telphone='{3}',Email='{4}',Address='{5}',Sex='{6}',Birthday='{7}' WHERE ID='{0}' ", list_Member[0].ID.ToString(), list_Member[0].Cname.ToString(), list_Member[0].Mobile1.ToString(), list_Member[0].Telphone.ToString(), list_Member[0].Email.ToString(), list_Member[0].Address.ToString(), list_Member[0].Sex.ToString(), list_Member[0].Birthday.ToString());
                 //sbSql.AppendFormat("  UPDATE Member SET Cname='{1}',Mobile1='{2}' WHERE ID='{0}' ", list_Member[0].ID.ToString(), list_Member[0].Cname.ToString(), list_Member[0].Mobile1.ToString());
 
                 cmd.Connection = sqlConn;
@@ -128,6 +140,7 @@ namespace TKMEMBER
                 else
                 {
                     tran.Commit();      //執行交易
+                    Search();
                 }
                 sqlConn.Close();
             }
@@ -153,14 +166,29 @@ namespace TKMEMBER
             {
                 textBox2.Text = dataGridView1.CurrentRow.Cells[1].Value.ToString();
                 textBox3.Text = dataGridView1.CurrentRow.Cells[2].Value.ToString();
-                textBox4.Text = dataGridView1.CurrentRow.Cells[4].Value.ToString();
-                textBox5.Text = dataGridView1.CurrentRow.Cells[7].Value.ToString();
-                textBox6.Text = dataGridView1.CurrentRow.Cells[8].Value.ToString();
+                textBox4.Text = dataGridView1.CurrentRow.Cells[4].Value.ToString();                
                 textBox7.Text = dataGridView1.CurrentRow.Cells[6].Value.ToString();
                 textBox8.Text = dataGridView1.CurrentRow.Cells[3].Value.ToString();
                 textBox9.Text = dataGridView1.CurrentRow.Cells[5].Value.ToString();
 
-               
+                if(!string.IsNullOrEmpty(dataGridView1.CurrentRow.Cells[7].Value.ToString()) && dataGridView1.CurrentRow.Cells[7].Value.ToString().Equals("女"))
+                {
+                    comboBox1.Text = "女";
+                }
+                else
+                {
+                    comboBox1.Text = "男";
+                }
+                if (!string.IsNullOrEmpty(dataGridView1.CurrentRow.Cells[8].Value.ToString()))
+                {
+                    dateTimePicker1.Value =Convert.ToDateTime(dataGridView1.CurrentRow.Cells[8].Value.ToString());
+                }
+                else
+                {
+                    dateTimePicker1.Value = DateTime.Now;
+                }
+
+
             }
             else
             {
@@ -180,7 +208,7 @@ namespace TKMEMBER
         private void button2_Click(object sender, EventArgs e)
         {
             list_Member.Clear();
-            list_Member.Add(new Member() { ID = dataGridView1.CurrentRow.Cells[0].Value.ToString(), Cname = textBox2.Text.ToString(), Mobile1 = textBox3.Text.ToString(), Telphone = textBox4.Text.ToString(), Email = textBox9.Text.ToString(), Address = textBox7.Text.ToString(), Sex = textBox5.Text.ToString(), Birthday = textBox6.Text.ToString() });
+            list_Member.Add(new Member() { ID = dataGridView1.CurrentRow.Cells[0].Value.ToString(), Cname = textBox2.Text.ToString(), Mobile1 = textBox3.Text.ToString(), Telphone = textBox4.Text.ToString(), Email = textBox9.Text.ToString(), Address = textBox7.Text.ToString(), Sex = comboBox1.Text.ToString(), Birthday = dateTimePicker1.Value.ToShortDateString() });
 
             MemberUpdate();
         }
