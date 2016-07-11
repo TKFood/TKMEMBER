@@ -18,6 +18,7 @@ namespace TKMEMBER
         SqlConnection sqlConn = new SqlConnection();
         SqlCommand sqlComm = new SqlCommand();
         StringBuilder sbSql = new StringBuilder();
+        StringBuilder sbSqlQuery = new StringBuilder();
         SqlDataAdapter adapter = new SqlDataAdapter();
         SqlCommandBuilder sqlCmdBuilder = new SqlCommandBuilder();
         SqlTransaction tran;
@@ -59,19 +60,34 @@ namespace TKMEMBER
                 {
                     sqlConn = new SqlConnection("server=192.168.1.102;database=TKFOODDB;uid=sa;pwd=chi");
                     sbSql.Clear();
-                    if(!string.IsNullOrEmpty(textBox1.Text.ToString())&& string.IsNullOrEmpty(textBox5.Text.ToString()))
+                    sbSqlQuery.Clear();
+
+                    if (!string.IsNullOrEmpty(textBox1.Text.ToString()))
                     {
-                        sbSql.AppendFormat("SELECT TOP 100 [ID],[Cname] AS '姓名',[Mobile1]  AS '手機',[OldCardID]  AS '舊卡號',[Telphone]  AS '電話',[Email],[Address]  AS '住址',[Sex]  AS '性別',[Birthday]  AS '生日' FROM [TKFOODDB].[dbo].[Member] WHERE OldCardID LIKE '%{0}%' ", textBox1.Text.ToString());
+                        if(string.IsNullOrEmpty(sbSqlQuery.ToString()))
+                        {
+                            sbSqlQuery.AppendFormat(" OldCardID LIKE '%{0}%' ", textBox1.Text.ToString());
+                        }
+                        else
+                        {
+                            sbSqlQuery.AppendFormat(" AND OldCardID LIKE '%{0}%' ", textBox1.Text.ToString());
+                        }
+                                             
                     }
-                    if (string.IsNullOrEmpty(textBox1.Text.ToString()) && !string.IsNullOrEmpty(textBox5.Text.ToString()))
+                    if (!string.IsNullOrEmpty(textBox5.Text.ToString()))
                     {
-                        sbSql.AppendFormat("SELECT TOP 100 [ID],[Cname] AS '姓名',[Mobile1]  AS '手機',[OldCardID]  AS '舊卡號',[Telphone]  AS '電話',[Email],[Address]  AS '住址',[Sex]  AS '性別',[Birthday]  AS '生日' FROM [TKFOODDB].[dbo].[Member] WHERE Cname LIKE '%{0}%' ", textBox5.Text.ToString());
-                    }
-                    if(!string.IsNullOrEmpty(textBox1.Text.ToString()) && !string.IsNullOrEmpty(textBox5.Text.ToString()))
-                    {
-                        sbSql.AppendFormat("SELECT TOP 100 [ID],[Cname] AS '姓名',[Mobile1]  AS '手機',[OldCardID]  AS '舊卡號',[Telphone]  AS '電話',[Email],[Address]  AS '住址',[Sex]  AS '性別',[Birthday]  AS '生日' FROM [TKFOODDB].[dbo].[Member] WHERE  OldCardID LIKE '%{0}%' AND Cname LIKE '%{1}%' ", textBox1.Text.ToString(), textBox5.Text.ToString());
+                        if (string.IsNullOrEmpty(sbSqlQuery.ToString()))
+                        {
+                            sbSqlQuery.AppendFormat("  Cname LIKE '%{0}%' ", textBox5.Text.ToString());
+                        }
+                        else
+                        {
+                            sbSqlQuery.AppendFormat(" AND  Cname LIKE '%{0}%' ", textBox5.Text.ToString());
+                        }
+                        
                     }
 
+                    sbSql.AppendFormat("SELECT TOP 10000 [ID],[Cname] AS '姓名',[Mobile1]  AS '手機',[Telphone]  AS '電話',[Email],[Address]  AS '住址',[Sex]  AS '性別',[Birthday]  AS '生日',[OldCardID]  AS '舊卡號',[OldLevel]  AS '舊會員等級' ,[NewCardID]  AS '新卡號' ,[NewLevel]  AS '新會員等級' FROM [TKFOODDB].[dbo].[Member] WHERE {0} ", sbSqlQuery.ToString());
 
                     adapter = new SqlDataAdapter(@"" + sbSql, sqlConn);
                     sqlCmdBuilder = new SqlCommandBuilder(adapter);
@@ -166,22 +182,25 @@ namespace TKMEMBER
             {
                 textBox2.Text = dataGridView1.CurrentRow.Cells[1].Value.ToString();
                 textBox3.Text = dataGridView1.CurrentRow.Cells[2].Value.ToString();
-                textBox4.Text = dataGridView1.CurrentRow.Cells[4].Value.ToString();                
-                textBox7.Text = dataGridView1.CurrentRow.Cells[6].Value.ToString();
-                textBox8.Text = dataGridView1.CurrentRow.Cells[3].Value.ToString();
-                textBox9.Text = dataGridView1.CurrentRow.Cells[5].Value.ToString();
+                textBox4.Text = dataGridView1.CurrentRow.Cells[3].Value.ToString();
+                textBox9.Text = dataGridView1.CurrentRow.Cells[4].Value.ToString();
+                textBox7.Text = dataGridView1.CurrentRow.Cells[5].Value.ToString();
+                textBox8.Text = dataGridView1.CurrentRow.Cells[8].Value.ToString();
+                textBox19.Text = dataGridView1.CurrentRow.Cells[9].Value.ToString();
+                textBox17.Text = dataGridView1.CurrentRow.Cells[10].Value.ToString();
+                textBox20.Text = dataGridView1.CurrentRow.Cells[11].Value.ToString();
 
-                if(!string.IsNullOrEmpty(dataGridView1.CurrentRow.Cells[7].Value.ToString()) && dataGridView1.CurrentRow.Cells[7].Value.ToString().Equals("女"))
+                if (!string.IsNullOrEmpty(dataGridView1.CurrentRow.Cells[6].Value.ToString()) && dataGridView1.CurrentRow.Cells[6].Value.ToString().Equals("女"))
                 {
                     comboBox1.Text = "女";
                 }
-                else
+                else if (!string.IsNullOrEmpty(dataGridView1.CurrentRow.Cells[6].Value.ToString()) && dataGridView1.CurrentRow.Cells[6].Value.ToString().Equals("男"))
                 {
                     comboBox1.Text = "男";
                 }
-                if (!string.IsNullOrEmpty(dataGridView1.CurrentRow.Cells[8].Value.ToString()))
+                if (!string.IsNullOrEmpty(dataGridView1.CurrentRow.Cells[7].Value.ToString()))
                 {
-                    dateTimePicker1.Value =Convert.ToDateTime(dataGridView1.CurrentRow.Cells[8].Value.ToString());
+                    dateTimePicker1.Value =Convert.ToDateTime(dataGridView1.CurrentRow.Cells[7].Value.ToString());
                 }
                 else
                 {
@@ -212,6 +231,8 @@ namespace TKMEMBER
 
             MemberUpdate();
         }
+
         #endregion
+
     }
 }
